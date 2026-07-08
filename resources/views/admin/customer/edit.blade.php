@@ -102,7 +102,10 @@
                         name="image">
                     @if($customer->image)
                     <div class="mt-2">
-                        <img src="{{ asset('storage/' . $customer->image) }}" alt="Customer Image" class="w-24 h-24 object-cover rounded-md border border-gray-200">
+                        @php
+                            $imgUrl = (strpos($customer->image, 'uploads/') === 0) ? asset($customer->image) : asset('storage/' . $customer->image);
+                        @endphp
+                        <img src="{{ $imgUrl }}" alt="Customer Image" class="w-24 h-24 object-cover rounded-md border border-gray-200">
                     </div>
                     @endif
                     @error('image')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
@@ -518,7 +521,10 @@
             name="background_image">
         @if($customer->background_image)
         <div class="mt-2">
-            <img src="{{ asset('storage/' . $customer->background_image) }}" alt="Customer background_image" class="w-24 h-24 object-cover rounded-md border border-gray-200">
+            @php
+                $bgImgUrl = (strpos($customer->background_image, 'uploads/') === 0) ? asset($customer->background_image) : asset('storage/' . $customer->background_image);
+            @endphp
+            <img src="{{ $bgImgUrl }}" alt="Customer background_image" class="w-24 h-24 object-cover rounded-md border border-gray-200">
         </div>
         @endif
         @error('background_image')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror

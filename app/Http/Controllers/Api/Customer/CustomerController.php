@@ -1092,7 +1092,7 @@ class CustomerController extends Controller
                 'description' => $aboutUs->description,
                 'vision' => $aboutUs->vision,
                 'mission' => $aboutUs->mission,
-                'image_path' => $aboutUs->image_path
+                'image_path' => $aboutUs->image_path ? asset('storage/' . $aboutUs->image_path) : null
             ];
         }
 

@@ -33,16 +33,39 @@ class CustomerController extends Controller
     /**
      * Display a listing of the resource (Index).
      */
-    public function index()
+    public function index(Request $request)
     {
         $adminId = $this->getCurrentAdminId();
 
+        // Save current URL for redirects (to remember page and search)
+        session(['customer_index_url' => $request->fullUrl()]);
+
+        $search = $request->input('search');
+
+        $query = Customer::with('village')->where('admin_id', $adminId);
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('mobile', 'like', "%{$search}%")
+                  ->orWhere('city', 'like', "%{$search}%")
+                  ->orWhere('father_name', 'like', "%{$search}%")
+                  ->orWhere('district', 'like', "%{$search}%")
+                  ->orWhere('area', 'like', "%{$search}%")
+                  ->orWhereHas('village', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('familyMembers', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('mobile', 'like', "%{$search}%");
+                  });
+            });
+        }
+
         // CRITICAL FIX: Only fetch customers created by the current admin (paginated)
         // Sort by ID ascending to show oldest customers first (order of creation)
-        $customers = Customer::with('village')
-            ->where('admin_id', $adminId)
-            ->orderBy('id', 'asc')
-            ->paginate(10); // Show 10 customers per page
+        $customers = $query->orderBy('id', 'asc')
+            ->paginate(10)->appends($request->all()); // Show 10 customers per page
 
         // Get all customers for printing (without pagination)
         // Limit to 5000 records to balance usability with performance
@@ -309,7 +332,7 @@ class CustomerController extends Controller
 
         $customer->update($validatedData);
 
-        return redirect()->route('admin.customer.index')->with('success', 'Customer updated successfully!');
+        return redirect()->to(session('customer_index_url', route('admin.customer.index')))->with('success', 'Customer updated successfully!');
     }
 
     /**
@@ -325,7 +348,7 @@ class CustomerController extends Controller
         }
 
         $customer->delete();
-        return redirect()->route('admin.customer.index')->with('success', 'Customer deleted successfully!');
+        return redirect()->to(session('customer_index_url', route('admin.customer.index')))->with('success', 'Customer deleted successfully!');
     }
 
     /**

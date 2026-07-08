@@ -141,6 +141,17 @@
         </div>
     </div>
 
+    {{-- Search Form --}}
+    <div class="mb-6 no-print flex justify-end">
+        <form id="search-form" action="{{ route('admin.customer.index') }}" method="GET" class="flex w-full md:w-1/3">
+            <input type="text" id="search-input" name="search" value="{{ request('search') }}" placeholder="Search anything..." class="form-input rounded-l-md w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border">
+            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-r-md hover:bg-indigo-700 transition border border-indigo-600">Search</button>
+            @if(request('search'))
+                <a href="{{ route('admin.customer.index') }}" class="ml-2 inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition">Clear</a>
+            @endif
+        </form>
+    </div>
+
     @if (session('success'))
     <div class="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg shadow-sm mb-6 no-print">{{ session('success') }}</div>
     @endif
@@ -206,7 +217,10 @@
                         @if(empty($fieldPermissions) || in_array('image', $fieldPermissions))
                         <td class="px-6 py-4 whitespace-nowrap text-center">
                             @if($customer->image)
-                            <img src="{{ asset('storage/' . $customer->image) }}" alt="Customer Image" class="w-10 h-10 object-cover rounded-md mx-auto border border-gray-200 shadow-sm">
+                                @php
+                                    $imgUrl = (strpos($customer->image, 'uploads/') === 0) ? asset($customer->image) : asset('storage/' . $customer->image);
+                                @endphp
+                            <img src="{{ $imgUrl }}" alt="Customer Image" class="w-10 h-10 object-cover rounded-md mx-auto border border-gray-200 shadow-sm">
                             @else
                             <div class="w-10 h-10 bg-gray-100 rounded-md mx-auto flex items-center justify-center text-gray-500 text-xs">N/A</div>
                             @endif
@@ -346,4 +360,28 @@
         @endforelse
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        const searchForm = document.getElementById('search-form');
+        let timeout = null;
+
+        if(searchInput && searchForm) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(function() {
+                    searchForm.submit();
+                }, 500); // 500ms delay to avoid submitting on every single keystroke
+            });
+            
+            // Move cursor to the end of the input if it has a value (so it doesn't interrupt typing after reload)
+            if(searchInput.value) {
+                const len = searchInput.value.length;
+                searchInput.focus();
+                searchInput.setSelectionRange(len, len);
+            }
+        }
+    });
+</script>
 @endsection

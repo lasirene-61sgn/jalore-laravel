@@ -250,6 +250,7 @@ Route::prefix('customer/{customer}/family')->name('admin.customer.family.')->gro
 
     // About Us Routes
     Route::get('/about-us', [AboutUsController::class, 'index'])->name('admin.about-us.index');
+    Route::get('/about-us/edit', [AboutUsController::class, 'edit'])->name('admin.about-us.edit');
     Route::put('/about-us', [AboutUsController::class, 'update'])->name('admin.about-us.update');
 
     // Helpline Section

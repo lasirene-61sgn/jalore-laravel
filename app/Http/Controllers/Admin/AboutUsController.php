@@ -22,6 +22,17 @@ class AboutUsController extends Controller
     }
 
     /**
+     * Display the About Us form for editing
+     */
+    public function edit()
+    {
+        $admin = Auth::guard('admin')->user();
+        $aboutUs = $admin->aboutUs ?? new AboutUs();
+        
+        return view('admin.about-us.edit', compact('aboutUs'));
+    }
+
+    /**
      * Update the About Us content
      */
     public function update(Request $request)

@@ -25,6 +25,7 @@ class AdminManagementController extends Controller
         'committee' => 'Committee',
         'customer' => 'Customers',
         'customer_plan' => 'Customers Plans',
+        'helpline' => 'Helpline',
         'bills' => 'Bills',
         'about_us' => 'About Us',
         'polls' => 'Polls',

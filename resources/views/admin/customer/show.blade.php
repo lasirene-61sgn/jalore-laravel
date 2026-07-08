@@ -85,7 +85,10 @@
                     
                     @if($customer->image)
                         <div class="mb-4">
-                            <img src="{{ asset('storage/' . $customer->image) }}" alt="Customer Image" class="w-48 h-auto object-cover rounded-lg border border-gray-200 shadow-sm">
+                            @php
+                                $imgUrl = (strpos($customer->image, 'uploads/') === 0) ? asset($customer->image) : asset('storage/' . $customer->image);
+                            @endphp
+                            <img src="{{ $imgUrl }}" alt="Customer Image" class="w-48 h-auto object-cover rounded-lg border border-gray-200 shadow-sm">
                         </div>
                     @endif
                     
